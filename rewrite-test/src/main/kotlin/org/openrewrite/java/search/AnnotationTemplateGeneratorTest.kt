@@ -15,12 +15,6 @@
  */
 package org.openrewrite.java.search
 
-import org.assertj.core.api.Assertions.assertThat
-import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Test
-import org.openrewrite.Issue
-import org.openrewrite.java.JavaParser
-
 interface AnnotationTemplateGeneratorTest {
 //
 //    @Issue("https://github.com/openrewrite/rewrite/issues/653")
@@ -42,12 +36,11 @@ interface AnnotationTemplateGeneratorTest {
 //            class Outer {
 //                class Inner {
 //                    void test() {
-//                        @${'$'}Placeholder /*__TEMPLATE__*/ String s = "Annotate me";
+//                        /*__TEMPLATE__*/
+//                        assert n == 1;
 //                    }
 //                }
 //            }
-//
-//            @interface ${'$'}Placeholder {}
 //        """.trimIndent()
 //
 //        assertThat(beforeAssert(cu)).isEqualTo(expected)
@@ -115,15 +108,37 @@ interface AnnotationTemplateGeneratorTest {
 //                    int n2;
 //                    new Object() {
 //                        void inner(int p4) {
-//                            @${'$'}Placeholder /*__TEMPLATE__*/ String s = "Annotate me";
+//                            /*__TEMPLATE__*/
+//                            assert n == 1;
 //                        }
 //                    };
 //                }
 //            }
-//
-//            @interface ${'$'}Placeholder {}
 //        """.trimIndent()
 //
 //        assertThat(beforeAssert(cu)).isEqualTo(expected)
+//    }
+//
+//    private fun beforeAssert(cu: JavaSourceFile): String {
+//        val s = StringBuilder()
+//        object : JavaVisitor<StringBuilder>() {
+//            override fun visitAssert(assert: J.Assert, p: StringBuilder): J {
+//                p.append(
+//                    AnnotationTemplateGenerator(emptySet())
+//                        .template(cursor, "assert n == 1;")
+//                )
+//                return assert
+//            }
+//        }.visit(cu, s)
+//        return format(s.toString())
+//    }
+//
+//    private fun format(s: String): String {
+//        val bos = ByteArrayOutputStream()
+//        Formatter(JavaFormatterOptions.builder().style(JavaFormatterOptions.Style.AOSP).build())
+//            .formatSource(CharSource.wrap(s), object : CharSink() {
+//                override fun openStream() = OutputStreamWriter(bos)
+//            })
+//        return String(bos.toByteArray()).trim()
 //    }
 }

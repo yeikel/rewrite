@@ -21,6 +21,7 @@ import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.TreeSerializer;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaSourceFile;
 
 import java.util.Arrays;
 
@@ -54,13 +55,13 @@ public interface JavaTreeTest {
                 break;
         }
 
-        J.CompilationUnit cu = parser.parse(getExecutionContext(), source).iterator().next();
+        JavaSourceFile cu = parser.parse(getExecutionContext(), source).iterator().next();
 
         J processed = new JavaVisitor<>().visit(cu, new Object());
         assertThat(processed).as("Processing is idempotent").isSameAs(cu);
 
-        TreeSerializer<J.CompilationUnit> treeSerializer = new TreeSerializer<>();
-        J.CompilationUnit roundTripCu = treeSerializer.read(treeSerializer.write(cu));
+        TreeSerializer<JavaSourceFile> treeSerializer = new TreeSerializer<>();
+        JavaSourceFile roundTripCu = treeSerializer.read(treeSerializer.write(cu));
 
         assertThat(JavaParserTestUtil.print(nestingLevel, cu))
                 .as("Source code is printed the same after parsing")
@@ -79,7 +80,7 @@ public interface JavaTreeTest {
 }
 
 class JavaParserTestUtil {
-    static String print(JavaTreeTest.NestingLevel nestingLevel, J.CompilationUnit cu) {
+    static String print(JavaTreeTest.NestingLevel nestingLevel, JavaSourceFile cu) {
         String printed;
         switch (nestingLevel) {
             case Block:

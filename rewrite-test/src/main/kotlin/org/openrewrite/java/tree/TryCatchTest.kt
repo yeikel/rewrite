@@ -138,7 +138,7 @@ interface TryCatchTest : JavaTreeTest {
                 }
             }
         """.trimIndent()
-        val cu: J.CompilationUnit = jp.parse(source).iterator().next()
+        val cu: JavaSourceFile = jp.parse(source).iterator().next()
 
         //This is testing the navigation into the try-with-resources and ensures the visitor correctly visits the
         //variable declarations of each resource by counting the number of on new class events.

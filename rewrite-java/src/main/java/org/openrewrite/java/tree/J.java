@@ -1091,7 +1091,7 @@ public interface J extends Serializable, Tree {
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @RequiredArgsConstructor
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    final class CompilationUnit implements J, SourceFile {
+    final class CompilationUnit implements J, JavaSourceFile {
         @Nullable
         @NonFinal
         transient WeakReference<TypeCache> typesInUse;
@@ -1120,21 +1120,25 @@ public interface J extends Serializable, Tree {
         @Nullable
         JRightPadded<Package> packageDeclaration;
 
+        @Override
         @Nullable
         public Package getPackageDeclaration() {
             return packageDeclaration == null ? null : packageDeclaration.getElement();
         }
 
+        @Override
         public CompilationUnit withPackageDeclaration(Package packageDeclaration) {
             return getPadding().withPackageDeclaration(JRightPadded.withElement(this.packageDeclaration, packageDeclaration));
         }
 
         List<JRightPadded<Import>> imports;
 
+        @Override
         public List<Import> getImports() {
             return JRightPadded.getElements(imports);
         }
 
+        @Override
         public CompilationUnit withImports(List<Import> imports) {
             return getPadding().withImports(JRightPadded.withElements(this.imports, imports));
         }
@@ -1149,13 +1153,15 @@ public interface J extends Serializable, Tree {
 
         @Override
         public <P> J acceptJava(JavaVisitor<P> v, P p) {
-            return v.visitCompilationUnit(this, p);
+            return v.visitCompilationUnit((JavaSourceFile) this, p);
         }
 
+        @Override
         public Set<NameTree> findType(String clazz) {
             return FindTypes.find(this, clazz);
         }
 
+        @Override
         public Set<JavaType> getTypesInUse() {
             return typeCache().getTypesInUse();
         }
@@ -1179,6 +1185,8 @@ public interface J extends Serializable, Tree {
             return cache;
         }
 
+        @SuppressWarnings("unchecked")
+        @Override
         public Padding getPadding() {
             Padding p;
             if (this.padding == null) {
@@ -1195,7 +1203,7 @@ public interface J extends Serializable, Tree {
         }
 
         @RequiredArgsConstructor
-        public static class Padding {
+        public static class Padding implements JavaSourceFile.Padding {
             private final CompilationUnit t;
 
             @Nullable
@@ -2240,7 +2248,7 @@ public interface J extends Serializable, Tree {
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @RequiredArgsConstructor
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    final class Import implements J, Comparable<Import> {
+    final class Import implements J, Comparable<Import>, Statement {
         @Nullable
         @NonFinal
         transient WeakReference<Padding> padding;
@@ -2363,6 +2371,11 @@ public interface J extends Serializable, Tree {
                 }
             }
             return p;
+        }
+
+        @Override
+        public CoordinateBuilder.Statement getCoordinates() {
+            throw new UnsupportedOperationException("Imports are not a valid target for templating.");
         }
 
         @RequiredArgsConstructor

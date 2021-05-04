@@ -16,8 +16,9 @@
 package org.openrewrite.java;
 
 import org.openrewrite.ExecutionContext;
+import org.openrewrite.Parser;
 import org.openrewrite.internal.lang.Nullable;
-import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaSourceFile;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -38,12 +39,12 @@ public class Java8Parser implements JavaParser {
     }
 
     @Override
-    public List<J.CompilationUnit> parseInputs(Iterable<Input> sourceFiles, @Nullable Path relativeTo, ExecutionContext ctx) {
+    public List<JavaSourceFile> parseInputs(Iterable<Input> sourceFiles, @Nullable Path relativeTo, ExecutionContext ctx) {
         return delegate.parseInputs(sourceFiles, relativeTo, ctx);
     }
 
     @Override
-    public JavaParser reset() {
+    public Parser<JavaSourceFile> reset() {
         return delegate.reset();
     }
 

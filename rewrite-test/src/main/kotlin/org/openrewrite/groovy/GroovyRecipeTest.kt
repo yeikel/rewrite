@@ -13,33 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.openrewrite.java
+package org.openrewrite.groovy
 
 import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.BeforeEach
 import org.openrewrite.Recipe
 import org.openrewrite.RecipeTest
-import org.openrewrite.java.tree.J
+import org.openrewrite.java.TypeValidator
 import org.openrewrite.java.tree.JavaSourceFile
 import java.io.File
-import java.nio.file.Path
 
-interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
-    override val parser: JavaParser
-        get() = JavaParser.fromJavaVersion()
-            .logCompilationWarningsAndErrors(true)
-            .build()
-
-    @BeforeEach
-    fun beforeRecipe() {
-        J.clearCaches()
-    }
+interface GroovyRecipeTest : RecipeTest<JavaSourceFile> {
+    override val parser: GroovyParser
+        get() = GroovyParser.builder().build()
 
     fun assertChanged(
         recipe: Recipe = this.recipe!!,
         moderneAstLink: String,
         moderneApiBearerToken: String = apiTokenFromUserHome(),
-        @Language("java") after: String,
+        @Language("groovy") after: String,
         cycles: Int = 2,
         expectedCyclesThatMakeChanges: Int = cycles - 1,
         afterConditions: (JavaSourceFile) -> Unit = { }
@@ -48,59 +39,64 @@ interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
     }
 
     fun assertChanged(
-        parser: JavaParser = this.parser,
+        parser: GroovyParser = this.parser,
         recipe: Recipe = this.recipe!!,
-        @Language("java") before: String,
-        @Language("java") dependsOn: Array<String> = emptyArray(),
-        @Language("java") after: String,
+        @Language("groovy") before: String,
+        @Language("groovy") dependsOn: Array<String> = emptyArray(),
+        @Language("groovy") after: String,
         cycles: Int = 2,
         expectedCyclesThatMakeChanges: Int = cycles - 1,
-        typeValidation: TypeValidator.ValidationOptions.Companion.Builder.()->Unit = {},
+        skipEnhancedTypeValidation: Boolean = false,
         afterConditions: (JavaSourceFile) -> Unit = { }
     ) {
-        val typeValidatingAfterConditions: (JavaSourceFile) -> Unit = { cu ->
-            TypeValidator.assertTypesValid(cu, TypeValidator.ValidationOptions.builder(typeValidation))
-            afterConditions(cu)
+        val typeValidatingAfterConditions: (JavaSourceFile) -> Unit = if(skipEnhancedTypeValidation) {
+            afterConditions
+        } else {
+            {
+                TypeValidator.assertTypesValid(it)
+                afterConditions(it)
+            }
         }
-
         super.assertChangedBase(parser, recipe, before, dependsOn, after, cycles, expectedCyclesThatMakeChanges, typeValidatingAfterConditions)
     }
 
     fun assertChanged(
-        parser: JavaParser = this.parser,
+        parser: GroovyParser = this.parser,
         recipe: Recipe = this.recipe!!,
-        @Language("java") before: File,
-        relativeTo: Path? = null,
-        @Language("java") dependsOn: Array<File> = emptyArray(),
-        @Language("java") after: String,
+        @Language("groovy") before: File,
+        @Language("groovy") dependsOn: Array<File> = emptyArray(),
+        @Language("groovy") after: String,
         cycles: Int = 2,
         expectedCyclesThatMakeChanges: Int = cycles - 1,
-        typeValidation: TypeValidator.ValidationOptions.Companion.Builder.()->Unit = {},
+        skipEnhancedTypeValidation: Boolean = false,
         afterConditions: (JavaSourceFile) -> Unit = { }
     ) {
-        val typeValidatingAfterConditions: (JavaSourceFile) -> Unit = { cu ->
-            TypeValidator.assertTypesValid(cu, TypeValidator.ValidationOptions.builder(typeValidation))
-            afterConditions(cu)
+        val typeValidatingAfterConditions: (JavaSourceFile) -> Unit = if(skipEnhancedTypeValidation) {
+            afterConditions
+        } else {
+            {
+                TypeValidator.assertTypesValid(it)
+                afterConditions(it)
+            }
         }
-        super.assertChangedBase(parser, recipe, before, relativeTo, dependsOn, after, cycles, expectedCyclesThatMakeChanges, typeValidatingAfterConditions)
+        super.assertChangedBase(parser, recipe, before, dependsOn, after, cycles, expectedCyclesThatMakeChanges, typeValidatingAfterConditions)
     }
 
     fun assertUnchanged(
-        parser: JavaParser = this.parser,
+        parser: GroovyParser = this.parser,
         recipe: Recipe = this.recipe!!,
-        @Language("java") before: String,
-        @Language("java") dependsOn: Array<String> = emptyArray()
+        @Language("groovy") before: String,
+        @Language("groovy") dependsOn: Array<String> = emptyArray()
     ) {
         super.assertUnchangedBase(parser, recipe, before, dependsOn)
     }
 
     fun assertUnchanged(
-        parser:JavaParser = this.parser,
+        parser: GroovyParser = this.parser,
         recipe: Recipe = this.recipe!!,
-        @Language("java") before: File,
-        relativeTo: Path? = null,
-        @Language("java") dependsOn: Array<File> = emptyArray()
+        @Language("groovy") before: File,
+        @Language("groovy") dependsOn: Array<File> = emptyArray()
     ) {
-        super.assertUnchangedBase(parser, recipe, before, relativeTo, dependsOn)
+        super.assertUnchangedBase(parser, recipe, before, dependsOn)
     }
 }

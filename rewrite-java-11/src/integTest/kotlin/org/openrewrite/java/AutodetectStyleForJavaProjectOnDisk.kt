@@ -20,7 +20,7 @@ import org.openrewrite.java.style.Autodetect
 import org.openrewrite.java.style.ImportLayoutStyle
 import org.openrewrite.java.style.SpacesStyle
 import org.openrewrite.java.style.TabsAndIndentsStyle
-import org.openrewrite.java.tree.J
+import org.openrewrite.java.tree.JavaSourceFile
 import org.openrewrite.style.NamedStyles
 import java.nio.file.Files
 import java.nio.file.Path
@@ -48,7 +48,7 @@ object AutodetectStyleForJavaProjectOnDisk {
 
         val parser: JavaParser = JavaParser.fromJavaVersion().build()
 
-        val sourceFiles: List<J.CompilationUnit> = parser.parse(paths, srcDir, InMemoryExecutionContext())
+        val sourceFiles: List<JavaSourceFile> = parser.parse(paths, srcDir, InMemoryExecutionContext())
 
         val autodetect = Autodetect.detect(sourceFiles)
 

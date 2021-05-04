@@ -17,6 +17,7 @@ package org.openrewrite.java;
 
 import org.openrewrite.java.tree.Expression;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.java.tree.Statement;
 
 /**
@@ -109,7 +110,13 @@ public class JavaIsoVisitor<P> extends JavaVisitor<P> {
     }
 
     @Override
+    @Deprecated
     public J.CompilationUnit visitCompilationUnit(J.CompilationUnit cu, P p) {
+        return (J.CompilationUnit) super.visitCompilationUnit(cu, p);
+    }
+
+    @Override
+    public JavaSourceFile visitCompilationUnit(JavaSourceFile cu, P p) {
         return (J.CompilationUnit) super.visitCompilationUnit(cu, p);
     }
 

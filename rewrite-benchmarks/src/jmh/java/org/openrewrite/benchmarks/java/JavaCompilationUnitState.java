@@ -20,6 +20,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.java.JavaParser;
 import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaSourceFile;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -29,7 +30,7 @@ import java.util.List;
 
 @State(Scope.Benchmark)
 public class JavaCompilationUnitState {
-    List<J.CompilationUnit> sourceFiles;
+    List<JavaSourceFile> sourceFiles;
 
     @Setup(Level.Trial)
     public void setup() throws URISyntaxException {
@@ -80,7 +81,7 @@ public class JavaCompilationUnitState {
         hole.consume(sourceFiles.size());
     }
 
-    public List<J.CompilationUnit> getSourceFiles() {
+    public List<JavaSourceFile> getSourceFiles() {
         return sourceFiles;
     }
 }

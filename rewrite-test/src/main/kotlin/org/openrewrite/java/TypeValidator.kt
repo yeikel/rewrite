@@ -63,7 +63,7 @@ class TypeValidator(
 
         @JvmStatic
         fun analyzeTypes(
-            cu: J.CompilationUnit,
+            cu: J,
             options: ValidationOptions = defaultOptions
         ): List<InvalidTypeResult> {
             val report = mutableListOf<InvalidTypeResult>()
@@ -73,7 +73,7 @@ class TypeValidator(
 
         @JvmStatic
         fun assertTypesValid(
-            cu: J.CompilationUnit,
+            cu: J,
             options: ValidationOptions = defaultOptions
         ) {
             val report = analyzeTypes(cu, options)
@@ -119,13 +119,13 @@ class TypeValidator(
             p.add(invalidTypeResult("J.ClassDeclaration package \"${t.packageName}\" does not match the enclosing J.CompilationUnit's package declaration \"${pack.expression.printTrimmed()}\""))
         }
 
-        return c;
+        return c
     }
 
     override fun visitMethodInvocation(method: J.MethodInvocation, p: MutableList<InvalidTypeResult>): J.MethodInvocation {
         val m = super.visitMethodInvocation(method, p)
         if(!options.methodInvocations) {
-            return m;
+            return m
         }
         val mt = method.type
         if(mt == null) {
@@ -158,7 +158,7 @@ class TypeValidator(
         if(!m.simpleName.equals(mt.name)) {
             p.add(invalidTypeResult("J.MethodDeclaration name \"${m.simpleName}\" does not match the name in its type information \"${mt.name}\""))
         }
-        return m;
+        return m
     }
 
     override fun visitIdentifier(identifier: J.Identifier, p: MutableList<InvalidTypeResult>): J.Identifier {
@@ -242,6 +242,6 @@ class TypeValidator(
 
     private fun J.Identifier.isAnnotationField(): Boolean {
         val parent = cursor.parent!!.getValue<Any>()
-        return parent is J.Assignment && parent.variable == this && cursor.firstEnclosing(J.Annotation::class.java) != null;
+        return parent is J.Assignment && parent.variable == this && cursor.firstEnclosing(J.Annotation::class.java) != null
     }
 }

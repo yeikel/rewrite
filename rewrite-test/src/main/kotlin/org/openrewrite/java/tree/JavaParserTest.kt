@@ -85,7 +85,7 @@ interface JavaParserTest {
         )[0]
 
         assertThat(cu.sourcePath).isEqualTo(Paths.get("eureka-client-archaius2/src/main/java/com/netflix/discovery/EurekaArchaius2ClientConfig.java"))
-        val serializer = TreeSerializer<J.CompilationUnit>()
+        val serializer = TreeSerializer<JavaSourceFile>()
 
         val cu2 = serializer.read(serializer.write(cu))
         assertThat(cu2.sourcePath).isEqualTo(Paths.get("eureka-client-archaius2/src/main/java/com/netflix/discovery/EurekaArchaius2ClientConfig.java"))

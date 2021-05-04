@@ -415,8 +415,22 @@ public class JavaVisitor<P> extends TreeVisitor<J, P> {
         return c;
     }
 
+    /**
+     * @param cu The compilation unit.
+     * @param p  The type parameter of the visitor.
+     * @return The visited compilation unit.
+     * @deprecated Use the {@link #visitCompilationUnit(JavaSourceFile, Object)} variant instead.
+     */
+    @Deprecated
     public J visitCompilationUnit(J.CompilationUnit cu, P p) {
-        J.CompilationUnit c = cu;
+        return cu;
+    }
+
+    public J visitCompilationUnit(JavaSourceFile cu, P p) {
+        JavaSourceFile c = cu;
+        if(c instanceof J.CompilationUnit) {
+            visitCompilationUnit((J.CompilationUnit) c, p);
+        }
         c = c.withPrefix(visitSpace(c.getPrefix(), Space.Location.COMPILATION_UNIT_PREFIX, p));
         c = c.withMarkers(visitMarkers(c.getMarkers(), p));
         if (c.getPadding().getPackageDeclaration() != null) {

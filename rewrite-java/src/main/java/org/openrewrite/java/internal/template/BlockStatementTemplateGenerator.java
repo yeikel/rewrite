@@ -62,7 +62,7 @@ public class BlockStatementTemplateGenerator {
                 });
     }
 
-    public List<Statement> listTemplatedStatements(J.CompilationUnit cu) {
+    public List<Statement> listTemplatedStatements(JavaSourceFile cu) {
         List<Statement> statements = new ArrayList<>();
 
         new JavaIsoVisitor<Integer>() {

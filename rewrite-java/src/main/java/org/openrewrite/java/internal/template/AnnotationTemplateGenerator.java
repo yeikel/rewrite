@@ -67,7 +67,7 @@ public class AnnotationTemplateGenerator {
                 });
     }
 
-    public List<J.Annotation> listAnnotations(J.CompilationUnit cu) {
+    public List<J.Annotation> listAnnotations(JavaSourceFile cu) {
         List<J.Annotation> annotations = new ArrayList<>();
 
         new JavaIsoVisitor<Integer>() {

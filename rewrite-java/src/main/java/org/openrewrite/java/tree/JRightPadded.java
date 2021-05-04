@@ -100,7 +100,7 @@ public class JRightPadded<T> {
     }
 
     public static <T> List<T> getElements(List<JRightPadded<T>> ls) {
-        List<T> list = new ArrayList<>();
+        List<T> list = new ArrayList<>(ls.size());
         for (JRightPadded<T> l : ls) {
             T elem = l.getElement();
             list.add(elem);

@@ -18,7 +18,6 @@ package org.openrewrite.java;
 import org.openrewrite.Cursor;
 import org.openrewrite.Tree;
 import org.openrewrite.TreePrinter;
-import org.openrewrite.internal.lang.NonNull;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.tree.*;
 import org.openrewrite.marker.Marker;
@@ -39,7 +38,6 @@ public class JavaPrinter<P> extends JavaVisitor<P> {
         this.treePrinter = treePrinter;
     }
 
-    @NonNull
     protected StringBuilder getPrinter() {
         StringBuilder acc = getCursor().getRoot().getNearestMessage(PRINTER_ACC_KEY);
         if (acc == null) {
@@ -410,13 +408,13 @@ public class JavaPrinter<P> extends JavaVisitor<P> {
         return block;
     }
 
-    private void visitStatements(List<JRightPadded<Statement>> statements, JRightPadded.Location location, P p) {
+    protected void visitStatements(List<JRightPadded<Statement>> statements, JRightPadded.Location location, P p) {
         for (JRightPadded<Statement> paddedStat : statements) {
             visitStatement(paddedStat, location, p);
         }
     }
 
-    private void visitStatement(@Nullable JRightPadded<Statement> paddedStat, JRightPadded.Location location, P p) {
+    protected void visitStatement(@Nullable JRightPadded<Statement> paddedStat, JRightPadded.Location location, P p) {
         if (paddedStat == null) {
             return;
         }
@@ -533,7 +531,7 @@ public class JavaPrinter<P> extends JavaVisitor<P> {
     }
 
     @Override
-    public J visitCompilationUnit(CompilationUnit cu, P p) {
+    public J visitCompilationUnit(JavaSourceFile cu, P p) {
         visitSpace(cu.getPrefix(), Space.Location.COMPILATION_UNIT_PREFIX, p);
         visitMarkers(cu.getMarkers(), p);
         visitRightPadded(cu.getPadding().getPackageDeclaration(), JRightPadded.Location.PACKAGE, ";", p);

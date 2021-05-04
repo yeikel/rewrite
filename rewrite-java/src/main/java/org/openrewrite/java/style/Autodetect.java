@@ -21,10 +21,7 @@ import org.openrewrite.Tree;
 import org.openrewrite.internal.StringUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.JavaIsoVisitor;
-import org.openrewrite.java.tree.J;
-import org.openrewrite.java.tree.JavaType;
-import org.openrewrite.java.tree.Space;
-import org.openrewrite.java.tree.TypeUtils;
+import org.openrewrite.java.tree.*;
 import org.openrewrite.style.NamedStyles;
 import org.openrewrite.style.Style;
 
@@ -46,13 +43,13 @@ public class Autodetect extends NamedStyles {
                 emptySet(), styles);
     }
 
-    public static Autodetect detect(List<J.CompilationUnit> cus) {
+    public static Autodetect detect(List<JavaSourceFile> cus) {
         IndentStatistics indentStatistics = new IndentStatistics();
         ImportLayoutStatistics importLayoutStatistics = new ImportLayoutStatistics();
         SpacesStatistics spacesStatistics = new SpacesStatistics();
 
         importLayoutStatistics.mapBlockPatterns(cus);
-        for (J.CompilationUnit cu : cus) {
+        for (JavaSourceFile cu : cus) {
             new FindIndentJavaVisitor().visit(cu, indentStatistics);
             new FindImportLayout().visit(cu, importLayoutStatistics);
             new FindSpacesStyle().visit(cu, spacesStatistics);
@@ -501,9 +498,9 @@ public class Autodetect extends NamedStyles {
          *
          * @param cus list of compilation units to create Block patterns from.
          */
-        public void mapBlockPatterns(List<J.CompilationUnit> cus) {
+        public void mapBlockPatterns(List<JavaSourceFile> cus) {
             Set<String> importedPackages = new TreeSet<>();
-            for (J.CompilationUnit cu : cus) {
+            for (JavaSourceFile cu : cus) {
                 for (J.Import anImport : cu.getImports()) {
                     importedPackages.add(anImport.getPackageName() + ".");
                 }
@@ -556,7 +553,7 @@ public class Autodetect extends NamedStyles {
 
     private static class FindImportLayout extends JavaIsoVisitor<ImportLayoutStatistics> {
         @Override
-        public J.CompilationUnit visitCompilationUnit(J.CompilationUnit cu, ImportLayoutStatistics importLayoutStatistics) {
+        public JavaSourceFile visitCompilationUnit(JavaSourceFile cu, ImportLayoutStatistics importLayoutStatistics) {
             Set<ImportLayoutStatistics.Block> blocks = new LinkedHashSet<>();
 
             importLayoutStatistics.staticAtBotCount += (cu.getImports().size() > 0 &&

@@ -20,7 +20,7 @@ import org.openrewrite.ExecutionContext;
 import org.openrewrite.InMemoryExecutionContext;
 import org.openrewrite.Parser;
 import org.openrewrite.internal.lang.Nullable;
-import org.openrewrite.java.tree.J;
+import org.openrewrite.java.tree.JavaSourceFile;
 import org.openrewrite.style.NamedStyles;
 
 import java.io.ByteArrayInputStream;
@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.*;
 
-public interface JavaParser extends Parser<J.CompilationUnit> {
+public interface JavaParser extends Parser<JavaSourceFile> {
 
     List<Path> runtimeClasspath = Collections.unmodifiableList(Arrays.stream(System.getProperty("java.class.path").split("\\Q" + System.getProperty("path.separator") + "\\E"))
             .map(cpEntry -> new File(cpEntry).toPath())
@@ -104,7 +104,7 @@ public interface JavaParser extends Parser<J.CompilationUnit> {
     }
 
     @Override
-    default List<J.CompilationUnit> parse(ExecutionContext ctx, String... sources) {
+    default List<JavaSourceFile> parse(ExecutionContext ctx, String... sources) {
         Pattern packagePattern = Pattern.compile("^package\\s+([^;]+);");
         Pattern classPattern = Pattern.compile("(class|interface|enum)\\s*(<[^>]*>)?\\s+(\\w+)");
 
@@ -135,7 +135,7 @@ public interface JavaParser extends Parser<J.CompilationUnit> {
     }
 
     @Override
-    default List<J.CompilationUnit> parse(@Language("java") String... sources) {
+    default List<JavaSourceFile> parse(@Language("java") String... sources) {
         return parse(new InMemoryExecutionContext(), sources);
     }
 
@@ -143,12 +143,6 @@ public interface JavaParser extends Parser<J.CompilationUnit> {
     default boolean accept(Path path) {
         return path.toString().endsWith(".java");
     }
-
-    /**
-     * Clear any in-memory parser caches that may prevent re-parsing of classes with the same fully qualified name in
-     * different rounds
-     */
-    JavaParser reset();
 
     /**
      * Changes the classpath on the parser. Intended for use in multiple pass parsing, where we want to keep the

@@ -15,18 +15,6 @@
  */
 package org.openrewrite.java.search
 
-import org.assertj.core.api.Assertions.assertThat
-import org.intellij.lang.annotations.Language
-import org.junit.jupiter.api.Test
-import org.openrewrite.Issue
-import org.openrewrite.java.JavaParser
-import org.openrewrite.java.JavaVisitor
-import org.openrewrite.java.internal.template.BlockStatementTemplateGenerator
-import org.openrewrite.java.tree.J
-import org.openrewrite.java.tree.Space
-import java.io.ByteArrayOutputStream
-import java.io.OutputStreamWriter
-
 interface BlockStatementTemplateGeneratorTest {
 //
 //    @Issue("https://github.com/openrewrite/rewrite/issues/653")
@@ -217,7 +205,7 @@ interface BlockStatementTemplateGeneratorTest {
 //        assertThat(beforeAssert(cu)).isEqualTo(expected)
 //    }
 //
-//    private fun beforeAssert(cu: J.CompilationUnit): String {
+//    private fun beforeAssert(cu: JavaSourceFile): String {
 //        val s = StringBuilder()
 //        object : JavaVisitor<StringBuilder>() {
 //            override fun visitAssert(assert: J.Assert, p: StringBuilder): J {
