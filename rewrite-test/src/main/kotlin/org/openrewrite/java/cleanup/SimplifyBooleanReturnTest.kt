@@ -17,6 +17,7 @@ package org.openrewrite.java.cleanup
 
 import org.junit.jupiter.api.Test
 import org.openrewrite.Recipe
+import org.openrewrite.family.c.cleanup.SimplifyBooleanReturn
 import org.openrewrite.java.JavaParser
 import org.openrewrite.java.JavaRecipeTest
 

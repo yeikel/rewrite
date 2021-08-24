@@ -22,7 +22,6 @@ import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.Marker;
 import org.openrewrite.marker.Markers;
 
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,13 +40,26 @@ import java.util.function.BiFunction;
  * @param <P> An input object that is passed to every visit method.
  */
 public abstract class TreeVisitor<T extends Tree, P> {
-    private static final boolean IS_DEBUGGING = System.getProperty("org.openrewrite.debug") != null ||
-            ManagementFactory.getRuntimeMXBean().getInputArguments().toString().indexOf("-agentlib:jdwp") > 0;
-
     private Cursor cursor;
 
     {
         setCursor(new Cursor(null, "root"));
+    }
+
+    public static <T extends Tree, P> TreeVisitor<T, P> noop() {
+        return new TreeVisitor<T, P>() {
+            @Override
+            public @Nullable T visit(@Nullable Tree tree, P p) {
+                //noinspection unchecked
+                return (T) tree;
+            }
+
+            @Override
+            public @Nullable T visit(@Nullable Tree tree, P p, Cursor parent) {
+                //noinspection unchecked
+                return (T) tree;
+            }
+        };
     }
 
     private List<TreeVisitor<T, P>> afterVisit;
@@ -60,14 +72,6 @@ public abstract class TreeVisitor<T extends Tree, P> {
 
     protected void setCursor(@Nullable Cursor cursor) {
         this.cursor = cursor;
-    }
-
-    /**
-     * @return Describes the language type that this visitor applies to, e.g. java, xml, properties.
-     */
-    @Nullable
-    public String getLanguage() {
-        return null;
     }
 
     /**
@@ -143,6 +147,26 @@ public abstract class TreeVisitor<T extends Tree, P> {
         return t;
     }
 
+    /**
+     * By calling this method, you are asserting that you know that the outcome will be non-null
+     * when the compiler couldn't otherwise prove this to be the case. This method is a shortcut
+     * for having to assert the non-nullability of the returned tree.
+     *
+     * @param tree A non-null tree.
+     * @param p    A state object that passes through the visitor.
+     * @return A non-null tree.
+     */
+    public T visitNonNull(Tree tree, P p, Cursor cursor) {
+        T t = visit(tree, p, cursor);
+        assert t != null;
+        return t;
+    }
+
+    @SuppressWarnings({"unchecked", "unused"})
+    public T visitSourceFile(SourceFile tree, P p) {
+        return (T) tree;
+    }
+
     @Nullable
     public T visit(@Nullable Tree tree, P p) {
         if (tree == null) {
@@ -173,9 +197,6 @@ public abstract class TreeVisitor<T extends Tree, P> {
             if (t != null) {
                 t = postVisit(t, p);
             }
-            if (IS_DEBUGGING && t != tree) {
-                debugOnChange(tree, t);
-            }
         }
         setCursor(cursor.getParent());
 
@@ -201,14 +222,6 @@ public abstract class TreeVisitor<T extends Tree, P> {
         return (isAcceptable) ? t : (T) tree;
     }
 
-    /**
-     * A debugging probe that is only called if a tree changes and either the org.openrewrite.debug
-     * system property is set or the process is running in debug mode.
-     */
-    @Incubating(since = "7.3.0")
-    protected void debugOnChange(@Nullable Tree before, @Nullable Tree after) {
-    }
-
     @SuppressWarnings("unused")
     @Nullable
     public T defaultValue(@Nullable Tree tree, P p) {
@@ -229,7 +242,14 @@ public abstract class TreeVisitor<T extends Tree, P> {
         return (T2) visit(tree, p);
     }
 
-    @Incubating(since = "7.2.0")
+    protected void visit(@Nullable List<? extends T> nodes, P p) {
+        if (nodes != null) {
+            for (T node : nodes) {
+                visit(node, p);
+            }
+        }
+    }
+
     public Markers visitMarkers(Markers markers, P p) {
         Collection<? extends Marker> originalMarkers = markers.entries();
         List<Marker> visited = new ArrayList<>(originalMarkers.size());
@@ -245,7 +265,6 @@ public abstract class TreeVisitor<T extends Tree, P> {
         return markers;
     }
 
-    @Incubating(since = "7.2.0")
     public <M extends Marker> M visitMarker(Marker marker, P p) {
         //noinspection unchecked
         return (M) marker;

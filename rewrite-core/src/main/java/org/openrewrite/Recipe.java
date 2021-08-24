@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.EqualsAndHashCode;
+import lombok.With;
 import org.openrewrite.config.RecipeDescriptor;
 import org.openrewrite.internal.RecipeIntrospectionUtils;
 import org.openrewrite.internal.lang.NullUtils;
@@ -59,28 +60,6 @@ public abstract class Recipe {
     public String getJacksonPolymorphicTypeTag() {
         return getClass().getName();
     }
-
-    /**
-     * This tree printer is used when comparing before/after source files and reifies any markers as a list of
-     * hash codes.
-     */
-    static final TreePrinter<ExecutionContext> MARKER_ID_PRINTER = new TreePrinter<ExecutionContext>() {
-        @Override
-        public void doBefore(@Nullable Tree tree, StringBuilder printerAcc, ExecutionContext executionContext) {
-            if (tree instanceof Markers) {
-                String markerIds = ((Markers) tree).entries().stream()
-                        .filter(marker -> !(marker instanceof RecipeThatMadeChanges))
-                        .map(marker -> String.valueOf(marker.hashCode()))
-                        .collect(joining(","));
-                if (!markerIds.isEmpty()) {
-                    printerAcc
-                            .append("markers[")
-                            .append(markerIds)
-                            .append("]->");
-                }
-            }
-        }
-    };
 
     public static final TreeVisitor<?, ExecutionContext> NOOP = new TreeVisitor<Tree, ExecutionContext>() {
         @Override
@@ -190,9 +169,8 @@ public abstract class Recipe {
      * @return A tree visitor that performs an applicability test.
      */
     @Incubating(since = "7.2.0")
-    @Nullable
     protected TreeVisitor<?, ExecutionContext> getApplicableTest() {
-        return null;
+        return TreeVisitor.noop();
     }
 
     /**
@@ -207,10 +185,8 @@ public abstract class Recipe {
      *
      * @return A tree visitor that performs an applicability test.
      */
-    @Incubating(since = "7.4.0")
-    @Nullable
     protected TreeVisitor<?, ExecutionContext> getSingleSourceApplicableTest() {
-        return null;
+        return TreeVisitor.noop();
     }
 
     /**
@@ -313,6 +289,11 @@ public abstract class Recipe {
         @Override
         public UUID getId() {
             return id;
+        }
+
+        @Override
+        public <T extends Tree> T withId(UUID id) {
+            throw new UnsupportedOperationException("We don't know of a reason to overwrite the ID on this marker.");
         }
     }
 

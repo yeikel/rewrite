@@ -16,7 +16,6 @@
 package org.openrewrite.xml.tree;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -24,14 +23,16 @@ import lombok.EqualsAndHashCode;
 import lombok.With;
 import lombok.experimental.FieldDefaults;
 import org.intellij.lang.annotations.Language;
-import org.openrewrite.*;
+import org.openrewrite.Cursor;
+import org.openrewrite.SourceFile;
+import org.openrewrite.Tree;
+import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.Marker;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.xml.XmlParser;
 import org.openrewrite.xml.XmlVisitor;
 import org.openrewrite.xml.internal.XmlListMarkersVisitor;
-import org.openrewrite.xml.internal.XmlPrinter;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -65,15 +66,6 @@ public interface Xml extends Serializable, Tree {
         return v instanceof XmlVisitor;
     }
 
-    default <P> String print(TreePrinter<P> printer, P p) {
-        return new XmlPrinter<>(printer).print(this, p);
-    }
-
-    @Override
-    default <P> String print(P p) {
-        return print(TreePrinter.identity(), p);
-    }
-
     String getPrefix();
 
     Xml withPrefix(String prefix);
@@ -82,44 +74,19 @@ public interface Xml extends Serializable, Tree {
 
     Markers getMarkers();
 
-    /**
-     * Find all subtrees marked with a particular marker rooted at this tree.
-     *
-     * @param markerType The marker type to look for
-     * @param <Xml2>     The expected supertype common to all subtrees that could be found.
-     * @return The set of matching subtrees.
-     */
-    default <Xml2 extends Xml> Set<Xml2> findMarkedWith(Class<? extends Marker> markerType) {
-        Set<Xml2> trees = new HashSet<>();
-        new XmlListMarkersVisitor<Xml2>(markerType).visit(this, trees);
-        return trees;
-    }
-
-
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
-    @JsonIgnoreProperties(value = "styles")
+    @With
     class Document implements Xml, SourceFile {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         Path sourcePath;
-
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         Prolog prolog;
-
-        @With
         Tag root;
-
-        @With
         String eof;
 
         @Override
@@ -131,21 +98,17 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Prolog implements Xml {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
 
         @Nullable
-        @With
         List<ProcessingInstruction> xmlDecls;
 
-        @With
         List<Misc> misc;
 
         @Override
@@ -157,20 +120,14 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class ProcessingInstruction implements Xml, Misc {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         String name;
-
-        @With
         List<Attribute> attributes;
 
         /**
@@ -190,6 +147,7 @@ public interface Xml extends Serializable, Tree {
     @Data
     class Tag implements Xml, Content {
         @EqualsAndHashCode.Include
+        @With
         UUID id;
 
         @With
@@ -362,23 +320,18 @@ public interface Xml extends Serializable, Tree {
         @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
         @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
         @Data
+        @With
         public static class Closing implements Xml {
             @EqualsAndHashCode.Include
             UUID id;
 
-            @With
             String prefix;
-
-            @With
             Markers markers;
-
-            @With
             String name;
 
             /**
              * Space before '&gt;'
              */
-            @With
             String beforeTagDelimiterPrefix;
         }
     }
@@ -386,23 +339,15 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Attribute implements Xml {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         Ident key;
-
-        @With
         String beforeEquals;
-
-        @With
         Value value;
 
         @Override
@@ -413,6 +358,7 @@ public interface Xml extends Serializable, Tree {
         @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
         @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
         @Data
+        @With
         public static class Value implements Xml {
             public enum Quote {
                 Double, Single
@@ -421,16 +367,9 @@ public interface Xml extends Serializable, Tree {
             @EqualsAndHashCode.Include
             UUID id;
 
-            @With
             String prefix;
-
-            @With
             Markers markers;
-
-            @With
             Quote quote;
-
-            @With
             String value;
         }
 
@@ -446,23 +385,15 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class CharData implements Xml, Content {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         boolean cdata;
-
-        @With
         String text;
-
-        @With
         String afterText;
 
         @Override
@@ -474,17 +405,13 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Comment implements Xml, Content, Misc {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         String text;
 
         @Override
@@ -496,49 +423,35 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class DocTypeDecl implements Xml, Misc {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         Ident name;
-
-        @With
         Ident externalId;
-
-        @With
         List<Ident> internalSubset;
 
-        @With
         @Nullable
         ExternalSubsets externalSubsets;
 
         /**
          * Space before '&gt;'.
          */
-        @With
         String beforeTagDelimiterPrefix;
 
         @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
         @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
         @Data
+        @With
         public static class ExternalSubsets implements Xml {
             @EqualsAndHashCode.Include
             UUID id;
 
-            @With
             String prefix;
-
-            @With
             Markers markers;
-
-            @With
             List<Element> elements;
         }
 
@@ -551,17 +464,13 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Element implements Xml {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         List<Ident> subset;
 
         /**
@@ -579,17 +488,13 @@ public interface Xml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Ident implements Xml {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         String name;
 
         @Override

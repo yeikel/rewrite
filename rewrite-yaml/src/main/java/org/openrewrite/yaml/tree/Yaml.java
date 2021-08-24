@@ -16,7 +16,6 @@
 package org.openrewrite.yaml.tree;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -25,13 +24,10 @@ import lombok.With;
 import lombok.experimental.FieldDefaults;
 import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
-import org.openrewrite.internal.StringUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.yaml.YamlVisitor;
-import org.openrewrite.yaml.internal.YamlPrinter;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -43,28 +39,6 @@ import static org.openrewrite.Tree.randomId;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@ref")
 public interface Yaml extends Serializable, Tree {
-    @Override
-    default <P> String print(P p) {
-        return new YamlPrinter<>(TreePrinter.identity()).print(this, p);
-    }
-
-    default <P> String print(TreePrinter<P> printer, P p) {
-        return new YamlPrinter<>(printer).print(this, p);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    default String printTrimmed() {
-        String print = print();
-
-        int i = 0;
-        for (; i < print.toCharArray().length && (print.charAt(i) == '\n' || print.charAt(i) == '\r'); i++) {
-        }
-        print = print.substring(i);
-
-        return print.isEmpty() || !Character.isWhitespace(print.charAt(0)) ?
-                print :
-                StringUtils.trimIndent(print.trim());
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -98,15 +72,12 @@ public interface Yaml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
-    @JsonIgnoreProperties(value = "styles")
+    @With
     class Documents implements Yaml, SourceFile {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         Markers markers;
-
-        @With
         Path sourcePath;
 
         @With
@@ -145,23 +116,15 @@ public interface Yaml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Document implements Yaml {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         boolean explicit;
-
-        @With
         Block block;
-
-        @With
         End end;
 
         @Override
@@ -187,14 +150,12 @@ public interface Yaml extends Serializable, Tree {
         @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
         @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
         @Data
+        @With
         public static class End implements Yaml {
             @EqualsAndHashCode.Include
             UUID id;
 
-            @With
             String prefix;
-
-            @With
             Markers markers;
 
             /**
@@ -203,7 +164,6 @@ public interface Yaml extends Serializable, Tree {
              * When this is set to "false" no "..." will be printed, but a comment at the end of the document still will be
              * See: https://yaml.org/spec/1.2/spec.html#id2800401
              */
-            @With
             boolean explicit;
 
             @Override
@@ -216,20 +176,14 @@ public interface Yaml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Scalar implements Block {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         Style style;
-
-        @With
         String value;
 
         public enum Style {
@@ -258,14 +212,12 @@ public interface Yaml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Mapping implements Block {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         Markers markers;
-
-        @With
         List<Entry> entries;
 
         @Override
@@ -300,24 +252,18 @@ public interface Yaml extends Serializable, Tree {
         @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
         @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
         @Data
+        @With
         public static class Entry implements Yaml {
             @EqualsAndHashCode.Include
             UUID id;
 
-            @With
             String prefix;
-
-            @With
             Markers markers;
-
-            @With
             Scalar key;
 
-            @With
             // https://yaml.org/spec/1.2/spec.html#:%20mapping%20value//
             String beforeMappingValueIndicator;
 
-            @With
             Block value;
 
             @Override
@@ -336,11 +282,11 @@ public interface Yaml extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Sequence implements Block {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         Markers markers;
 
         /**
@@ -350,14 +296,11 @@ public interface Yaml extends Serializable, Tree {
          *  - bar
          */
         @Nullable
-        @With
         String openingBracketPrefix;
 
-        @With
         List<Entry> entries;
 
         @Nullable
-        @With
         String closingBracketPrefix;
 
         @Override
@@ -387,17 +330,13 @@ public interface Yaml extends Serializable, Tree {
         @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
         @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
         @Data
+        @With
         public static class Entry implements Yaml {
             @EqualsAndHashCode.Include
             UUID id;
 
-            @With
             String prefix;
-
-            @With
             Markers markers;
-
-            @With
             Block block;
 
             /**

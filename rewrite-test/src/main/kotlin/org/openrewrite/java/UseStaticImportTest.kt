@@ -18,8 +18,9 @@ package org.openrewrite.java
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.openrewrite.ExecutionContext
+import org.openrewrite.family.c.tree.C
+import org.openrewrite.family.c.tree.CType
 import org.openrewrite.java.tree.J
-import org.openrewrite.java.tree.JavaType
 
 interface UseStaticImportTest : JavaRecipeTest {
     @Test
@@ -86,23 +87,23 @@ interface UseStaticImportTest : JavaRecipeTest {
         recipe = toRecipe {
             object : JavaIsoVisitor<ExecutionContext>() {
                 override fun visitClassDeclaration(
-                    classDecl: J.ClassDeclaration,
+                    classDecl: C.ClassDeclaration,
                     p: ExecutionContext
-                ): J.ClassDeclaration {
+                ): C.ClassDeclaration {
                     val cd = super.visitClassDeclaration(classDecl, p)
                     return cd.withExtends(null)
                 }
 
-                override fun visitImport(_import: J.Import, p: ExecutionContext): J.Import? {
+                override fun visitImport(impoort: J.Import, p: ExecutionContext): J.Import? {
                     return null
                 }
 
                 override fun visitMethodInvocation(
-                    method: J.MethodInvocation,
+                    method: C.MethodInvocation,
                     p: ExecutionContext
-                ): J.MethodInvocation {
+                ): C.MethodInvocation {
                     val mi = super.visitMethodInvocation(method, p)
-                    return mi.withDeclaringType(JavaType.Class.build("asserts.Assert"))
+                    return mi.withDeclaringType(CType.Class.build("asserts.Assert"))
                 }
 
                 override fun visitCompilationUnit(cu: J.CompilationUnit, p: ExecutionContext): J.CompilationUnit {

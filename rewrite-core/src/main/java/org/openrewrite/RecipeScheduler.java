@@ -20,6 +20,8 @@ import io.micrometer.core.instrument.Metrics;
 import io.micrometer.core.instrument.Timer;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.MetricsHelper;
+import org.openrewrite.internal.lang.Nullable;
+import org.openrewrite.marker.Markers;
 import org.openrewrite.scheduling.WatchableExecutionContext;
 
 import java.time.Duration;
@@ -29,13 +31,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
-import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
-import static org.openrewrite.Recipe.MARKER_ID_PRINTER;
+import static java.util.stream.Collectors.*;
 import static org.openrewrite.Recipe.PANIC;
 
 public interface RecipeScheduler {
@@ -91,14 +90,40 @@ public interface RecipeScheduler {
         // added or changed files
         for (SourceFile s : after) {
             SourceFile original = sourceFileIdentities.get(s.getId());
+
+            TreeVisitor<Tree, PrintOutputCapture<ExecutionContext>> markerIdPrinter = new TreeVisitor<Tree, PrintOutputCapture<ExecutionContext>>() {
+                @Override
+                public Tree visit(@Nullable Tree tree, PrintOutputCapture<ExecutionContext> p) {
+                    if (tree instanceof Markers) {
+                        String markerIds = ((Markers) tree).entries().stream()
+                                .filter(marker -> !(marker instanceof Recipe.RecipeThatMadeChanges))
+                                .map(marker -> String.valueOf(marker.hashCode()))
+                                .collect(joining(","));
+                        if (!markerIds.isEmpty()) {
+                            p.out
+                                    .append("markers[")
+                                    .append(markerIds)
+                                    .append("]->");
+                        }
+                    }
+                    return super.visit(tree, p);
+                }
+            };
+
             if (original != s) {
                 if (original == null) {
                     results.add(new Result(null, s, singleton(recipeThatDeletedSourceFile.get(s.getId()))));
                 } else {
-                    //printing both the before and after (and including markers in the output) and then comparing the
-                    //output to determine if a change has been made.
-                    if (!original.getSourcePath().equals(s.getSourcePath()) ||
-                            !original.print(MARKER_ID_PRINTER, ctx).equals(s.print(MARKER_ID_PRINTER, ctx))) {
+                    boolean isChanged = !original.getSourcePath().equals(s.getSourcePath());
+                    if(!isChanged) {
+                        PrintOutputCapture<ExecutionContext> originalOutput = new PrintOutputCapture<>(ctx);
+                        PrintOutputCapture<ExecutionContext> sOutput = new PrintOutputCapture<>(ctx);
+                        markerIdPrinter.visit(original, originalOutput);
+                        markerIdPrinter.visit(s, sOutput);
+                        isChanged = !originalOutput.toString().equals(sOutput.toString());
+                    }
+
+                    if (isChanged) {
                         results.add(new Result(original, s, s.getMarkers()
                                 .findFirst(Recipe.RecipeThatMadeChanges.class)
                                 .orElseThrow(() -> new IllegalStateException("SourceFile changed but no recipe reported making a change?"))
@@ -129,18 +154,17 @@ public interface RecipeScheduler {
         long startTime = System.nanoTime();
         AtomicBoolean thrownErrorOnTimeout = new AtomicBoolean(false);
 
-        if (recipe.getApplicableTest() != null) {
-            boolean applicable = false;
-            for (S s : before) {
-                if (recipe.getApplicableTest().visit(s, ctx) != s) {
-                    applicable = true;
-                    break;
-                }
+        recipe.getApplicableTest();
+        boolean applicable = false;
+        for (S s : before) {
+            if (recipe.getApplicableTest().visit(s, ctx) != s) {
+                applicable = true;
+                break;
             }
+        }
 
-            if (!applicable) {
-                return before;
-            }
+        if (!applicable) {
+            return before;
         }
 
         List<S> after = !recipe.validate(ctx).isValid() ?
@@ -149,11 +173,10 @@ public interface RecipeScheduler {
                     Timer.Builder timer = Timer.builder("rewrite.recipe.visit").tag("recipe", recipe.getDisplayName());
                     Timer.Sample sample = Timer.start();
 
-                    if (recipe.getSingleSourceApplicableTest() != null) {
-                        if (recipe.getSingleSourceApplicableTest().visit(s, ctx) == s) {
-                            sample.stop(MetricsHelper.successTags(timer, s, "skipped").register(Metrics.globalRegistry));
-                            return s;
-                        }
+                    recipe.getSingleSourceApplicableTest();
+                    if (recipe.getSingleSourceApplicableTest().visit(s, ctx) == s) {
+                        sample.stop(MetricsHelper.successTags(timer, s, "skipped").register(Metrics.globalRegistry));
+                        return s;
                     }
 
                     Duration duration = Duration.ofNanos(System.nanoTime() - startTime);

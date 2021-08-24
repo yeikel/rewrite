@@ -18,9 +18,11 @@ package org.openrewrite.marker;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import org.openrewrite.Cursor;
+import org.openrewrite.PrintOutputCapture;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
+import org.openrewrite.internal.lang.Nullable;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@ref")
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@c")
@@ -31,7 +33,12 @@ public interface Marker extends Tree {
     }
 
     @Override
-    default <P> String print(TreePrinter<P> printer, P p) {
-        return "";
+    default <P> TreeVisitor<?, PrintOutputCapture<P>> printer(Cursor cursor) {
+        return TreeVisitor.noop();
+    }
+
+    @Override
+    default <P> TreeVisitor<?, P> formatter(@Nullable Tree stopAfter, Cursor cursor) {
+        return TreeVisitor.noop();
     }
 }

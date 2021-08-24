@@ -19,12 +19,12 @@ import org.intellij.lang.annotations.Language
 import org.junit.jupiter.api.BeforeEach
 import org.openrewrite.Recipe
 import org.openrewrite.RecipeTest
+import org.openrewrite.family.c.tree.C
 import org.openrewrite.java.tree.J
-import org.openrewrite.java.tree.JavaSourceFile
 import java.io.File
 import java.nio.file.Path
 
-interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
+interface JavaRecipeTest : RecipeTest<J.CompilationUnit> {
     override val parser: JavaParser
         get() = JavaParser.fromJavaVersion()
             .logCompilationWarningsAndErrors(true)
@@ -32,7 +32,7 @@ interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
 
     @BeforeEach
     fun beforeRecipe() {
-        J.clearCaches()
+        C.clearCaches()
     }
 
     fun assertChanged(
@@ -42,7 +42,7 @@ interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
         @Language("java") after: String,
         cycles: Int = 2,
         expectedCyclesThatMakeChanges: Int = cycles - 1,
-        afterConditions: (JavaSourceFile) -> Unit = { }
+        afterConditions: (J.CompilationUnit) -> Unit = { }
     ) {
         super.assertChangedBase(recipe, moderneAstLink, moderneApiBearerToken, after, cycles, expectedCyclesThatMakeChanges, afterConditions)
     }
@@ -56,9 +56,9 @@ interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
         cycles: Int = 2,
         expectedCyclesThatMakeChanges: Int = cycles - 1,
         typeValidation: TypeValidator.ValidationOptions.Companion.Builder.()->Unit = {},
-        afterConditions: (JavaSourceFile) -> Unit = { }
+        afterConditions: (J.CompilationUnit) -> Unit = { }
     ) {
-        val typeValidatingAfterConditions: (JavaSourceFile) -> Unit = { cu ->
+        val typeValidatingAfterConditions: (J.CompilationUnit) -> Unit = { cu ->
             TypeValidator.assertTypesValid(cu, TypeValidator.ValidationOptions.builder(typeValidation))
             afterConditions(cu)
         }
@@ -76,9 +76,9 @@ interface JavaRecipeTest : RecipeTest<JavaSourceFile> {
         cycles: Int = 2,
         expectedCyclesThatMakeChanges: Int = cycles - 1,
         typeValidation: TypeValidator.ValidationOptions.Companion.Builder.()->Unit = {},
-        afterConditions: (JavaSourceFile) -> Unit = { }
+        afterConditions: (J.CompilationUnit) -> Unit = { }
     ) {
-        val typeValidatingAfterConditions: (JavaSourceFile) -> Unit = { cu ->
+        val typeValidatingAfterConditions: (J.CompilationUnit) -> Unit = { cu ->
             TypeValidator.assertTypesValid(cu, TypeValidator.ValidationOptions.builder(typeValidation))
             afterConditions(cu)
         }

@@ -23,7 +23,7 @@ import org.openrewrite.Recipe
 import org.openrewrite.Tree
 import org.openrewrite.java.cleanup.TypecastParenPad
 import org.openrewrite.java.cleanup.TypecastParenPadStyle
-import org.openrewrite.java.format.AutoFormatVisitor
+import org.openrewrite.family.c.format.AutoFormatVisitor
 import org.openrewrite.style.NamedStyles
 import org.openrewrite.style.Style
 
@@ -62,7 +62,8 @@ interface TypecastParenPadTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -93,7 +94,8 @@ interface TypecastParenPadTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )

@@ -39,11 +39,6 @@ public class HclVisitor<P> extends TreeVisitor<Hcl, P> {
     public <H extends Hcl> H autoFormat(H h, @Nullable Hcl stopAfter, P p, Cursor cursor) {
         return (H) new AutoFormatVisitor<>(stopAfter).visit(h, p, cursor);
     }
-    
-    @Override
-    public String getLanguage() {
-        return "HCL";
-    }
 
     public Hcl visitAttribute(Hcl.Attribute attribute, P p) {
         Hcl.Attribute a = attribute;

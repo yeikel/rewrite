@@ -17,6 +17,7 @@ package org.openrewrite.style;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.With;
 import org.openrewrite.Validated;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.Marker;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class NamedStyles implements Marker {
+    @With
     private final UUID id;
 
     @EqualsAndHashCode.Include

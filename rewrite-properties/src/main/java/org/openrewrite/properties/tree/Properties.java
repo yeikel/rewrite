@@ -16,7 +16,6 @@
 package org.openrewrite.properties.tree;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -25,12 +24,10 @@ import lombok.With;
 import lombok.experimental.FieldDefaults;
 import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.properties.PropertiesVisitor;
-import org.openrewrite.properties.internal.PropertiesPrinter;
 
 import java.io.Serializable;
 import java.nio.file.Path;
@@ -39,15 +36,6 @@ import java.util.UUID;
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@ref")
 public interface Properties extends Serializable, Tree {
-
-    default <P> String print(TreePrinter<P> printer, P p) {
-        return new PropertiesPrinter<>(printer).print(this, p);
-    }
-
-    @Override
-    default <P> String print(P p) {
-        return new PropertiesPrinter<>(TreePrinter.identity()).print(this, p);
-    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -76,24 +64,15 @@ public interface Properties extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
-    @JsonIgnoreProperties(value = "styles")
+    @With
     class File implements Properties, SourceFile {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         Path sourcePath;
-
-        @With
         List<Content> content;
-
-        @With
         String eof;
 
         @Override
@@ -108,23 +87,15 @@ public interface Properties extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Entry implements Content {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         String key;
-
-        @With
         String beforeEquals;
-
-        @With
         Value value;
 
         @Override
@@ -153,17 +124,13 @@ public interface Properties extends Serializable, Tree {
     @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
     @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
     @Data
+    @With
     class Comment implements Content {
         @EqualsAndHashCode.Include
         UUID id;
 
-        @With
         String prefix;
-
-        @With
         Markers markers;
-
-        @With
         String message;
 
         @Override

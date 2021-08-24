@@ -17,6 +17,8 @@ package org.openrewrite.java.style
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.openrewrite.family.c.style.Autodetect
+import org.openrewrite.family.c.style.TabsAndIndentsStyle
 import org.openrewrite.java.JavaParser
 import org.openrewrite.style.NamedStyles
 

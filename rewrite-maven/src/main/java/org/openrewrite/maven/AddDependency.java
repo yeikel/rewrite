@@ -17,11 +17,11 @@ package org.openrewrite.maven;
 
 import lombok.*;
 import org.openrewrite.*;
+import org.openrewrite.family.c.search.UsesType;
 import org.openrewrite.internal.ListUtils;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.java.marker.JavaProject;
 import org.openrewrite.java.marker.JavaSourceSet;
-import org.openrewrite.java.search.UsesType;
 import org.openrewrite.maven.cache.MavenPomCache;
 import org.openrewrite.maven.internal.InsertDependencyComparator;
 import org.openrewrite.maven.internal.MavenMetadata;

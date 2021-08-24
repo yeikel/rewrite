@@ -18,10 +18,11 @@ package org.openrewrite.java.format
 import org.junit.jupiter.api.Test
 import org.openrewrite.Recipe
 import org.openrewrite.Tree.randomId
+import org.openrewrite.family.c.format.NormalizeTabsOrSpaces
 import org.openrewrite.java.JavaParser
 import org.openrewrite.java.JavaRecipeTest
-import org.openrewrite.java.style.IntelliJ
-import org.openrewrite.java.style.TabsAndIndentsStyle
+import org.openrewrite.family.c.style.IntelliJ
+import org.openrewrite.family.c.style.TabsAndIndentsStyle
 import org.openrewrite.style.NamedStyles
 
 interface NormalizeTabsOrSpacesTest : JavaRecipeTest {

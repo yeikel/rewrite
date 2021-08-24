@@ -19,7 +19,6 @@ import lombok.Value;
 import lombok.With;
 import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.marker.Markers;
 
@@ -31,6 +30,7 @@ import java.util.UUID;
  */
 @Value
 public class PlainText implements SourceFile, Tree {
+    @With
     UUID id;
 
     @With
@@ -51,15 +51,5 @@ public class PlainText implements SourceFile, Tree {
     @Override
     public <R extends Tree, P> R accept(TreeVisitor<R, P> v, P p) {
         return (R) ((PlainTextVisitor<P>) v).visitText(this, p);
-    }
-
-    @Override
-    public <P> String print(TreePrinter<P> printer, P p) {
-        return new PlainTextPrinter<>(printer).print(this, p);
-    }
-
-    @Override
-    public <P> String print(P p) {
-        return print(TreePrinter.identity(), p);
     }
 }

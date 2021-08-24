@@ -18,6 +18,7 @@ package org.openrewrite.marker;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.With;
 import lombok.experimental.FieldDefaults;
 import org.eclipse.jgit.lib.*;
 import org.openrewrite.Incubating;
@@ -34,8 +35,10 @@ import static org.openrewrite.Tree.randomId;
 @Incubating(since = "7.0.0")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Data
+@With
 public class GitProvenance implements Marker {
     UUID id;
+
     @Nullable
     String origin;
 

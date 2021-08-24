@@ -16,9 +16,7 @@
 package org.openrewrite.json.search;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.openrewrite.Incubating;
 import org.openrewrite.Recipe;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.RecipeSearchResult;
 
@@ -42,14 +40,5 @@ public class JsonSearchResult extends RecipeSearchResult {
 
     public JsonSearchResult(Recipe recipe, @Nullable String description) {
         super(randomId(), recipe, description);
-    }
-
-    @Override
-    public <P> String print(TreePrinter<P> printer, P p) {
-        if (getDescription() == null) {
-            return "/*~~>*/";
-        } else {
-            return String.format("/*~~(%s)~~>*/", getDescription());
-        }
     }
 }

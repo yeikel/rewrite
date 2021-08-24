@@ -22,11 +22,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.json.JsonVisitor;
-import org.openrewrite.json.internal.JsonPrinter;
 import org.openrewrite.marker.Markers;
 
 import java.io.Serializable;
@@ -55,18 +53,7 @@ public interface Json extends Serializable, Tree {
         return v instanceof JsonVisitor;
     }
 
-    default <P> String print(TreePrinter<P> printer, P p) {
-        return new JsonPrinter<>(printer).print(this, p);
-    }
-
-    @Override
-    default <P> String print(P p) {
-        return print(TreePrinter.identity(), p);
-    }
-
     Space getPrefix();
-
-    <J extends Json> J withId(UUID id);
 
     <J extends Json> J withPrefix(Space prefix);
 
@@ -217,11 +204,8 @@ public interface Json extends Serializable, Tree {
         UUID id;
 
         Space prefix;
-
         Markers markers;
-
         String source;
-
         Object value;
 
         @Override

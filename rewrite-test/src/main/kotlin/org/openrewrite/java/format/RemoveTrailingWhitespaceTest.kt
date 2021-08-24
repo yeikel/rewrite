@@ -16,6 +16,7 @@
 package org.openrewrite.java.format
 
 import org.junit.jupiter.api.Test
+import org.openrewrite.family.c.format.RemoveTrailingWhitespace
 import org.openrewrite.java.JavaParser
 import org.openrewrite.java.JavaRecipeTest
 

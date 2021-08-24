@@ -21,11 +21,6 @@ import org.openrewrite.xml.tree.Xml;
 
 public class XmlVisitor<P> extends TreeVisitor<Xml, P> {
 
-    @Override
-    public String getLanguage() {
-        return "xml";
-    }
-
     public Xml visitDocument(Xml.Document document, P p) {
         Xml.Document d = document;
         d = d.withProlog(visitAndCast(d.getProlog(), p));

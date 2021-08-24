@@ -16,7 +16,7 @@
 package org.openrewrite.marker;
 
 import org.junit.jupiter.api.Test;
-import org.openrewrite.TreePrinter;
+import org.openrewrite.Tree;
 import org.openrewrite.TreeVisitor;
 
 import java.util.Collections;
@@ -86,13 +86,13 @@ public class MarkersTest {
         }
 
         @Override
-        public <P> boolean isAcceptable(TreeVisitor<?, P> v, P p) {
-            return false;
+        public <T extends Tree> T withId(UUID id) {
+            throw new UnsupportedOperationException("Unsupported");
         }
 
         @Override
-        public <P> String print(TreePrinter<P> printer, P p) {
-            return "";
+        public <P> boolean isAcceptable(TreeVisitor<?, P> v, P p) {
+            return false;
         }
     }
 
@@ -100,6 +100,11 @@ public class MarkersTest {
         @Override
         public UUID getId() {
             return randomId();
+        }
+
+        @Override
+        public <T extends Tree> T withId(UUID id) {
+            throw new UnsupportedOperationException("Unsupported");
         }
     }
 }

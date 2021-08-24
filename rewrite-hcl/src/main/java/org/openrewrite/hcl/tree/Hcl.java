@@ -23,10 +23,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.openrewrite.SourceFile;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.hcl.HclVisitor;
-import org.openrewrite.hcl.internal.HclPrinter;
 import org.openrewrite.internal.lang.Nullable;
 import org.openrewrite.marker.Markers;
 import org.openrewrite.template.SourceTemplate;
@@ -59,18 +57,7 @@ public interface Hcl extends Serializable, Tree {
         return v instanceof HclVisitor;
     }
 
-    default <P> String print(TreePrinter<P> printer, P p) {
-        return new HclPrinter<>(printer).print(this, p);
-    }
-
-    @Override
-    default <P> String print(P p) {
-        return print(TreePrinter.identity(), p);
-    }
-
     Space getPrefix();
-
-    <H extends Hcl> H withId(UUID id);
 
     <H extends Hcl> H withPrefix(Space prefix);
 

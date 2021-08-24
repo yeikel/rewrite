@@ -1,10 +1,6 @@
 include(
     "rewrite-core",
     "rewrite-hcl",
-    "rewrite-groovy",
-    "rewrite-java",
-    "rewrite-java-8",
-    "rewrite-java-11",
     "rewrite-json",
     "rewrite-maven",
     "rewrite-properties",
@@ -13,3 +9,8 @@ include(
     "rewrite-test",
     "rewrite-benchmarks"
 )
+
+listOf("family-c", "java", "java-8", "java-11", "groovy").forEach { lang ->
+    include("rewrite-$lang")
+    project(":rewrite-$lang").projectDir = File(rootProject.projectDir, "c-family-languages/rewrite-$lang")
+}

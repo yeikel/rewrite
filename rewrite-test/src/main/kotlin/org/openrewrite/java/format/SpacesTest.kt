@@ -20,11 +20,12 @@ package org.openrewrite.java.format
 import org.junit.jupiter.api.Test
 import org.openrewrite.Recipe
 import org.openrewrite.Tree.randomId
+import org.openrewrite.family.c.format.Spaces
 import org.openrewrite.java.JavaParser
 import org.openrewrite.java.JavaRecipeTest
 import org.openrewrite.java.cleanup.EmptyForInitializerPadStyle
 import org.openrewrite.java.cleanup.EmptyForIteratorPadStyle
-import org.openrewrite.java.style.IntelliJ
+import org.openrewrite.family.c.style.IntelliJ
 import org.openrewrite.style.NamedStyles
 import org.openrewrite.style.Style
 

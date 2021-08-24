@@ -45,4 +45,20 @@ public interface SourceFile extends Tree {
     default <S extends Style> S getStyle(Class<S> style) {
         return NamedStyles.merge(style, getMarkers().findAll(NamedStyles.class));
     }
+
+    default <P> String print(P p) {
+        return print(p, new Cursor(null, this));
+    }
+
+    default String print() {
+        return print(0);
+    }
+
+    default <P> String printTrimmed(P p) {
+        return printTrimmed(p, new Cursor(null, this));
+    }
+
+    default String printTrimmed() {
+        return printTrimmed(0);
+    }
 }

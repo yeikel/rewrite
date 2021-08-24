@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.With;
 import org.openrewrite.Incubating;
 import org.openrewrite.Tree;
-import org.openrewrite.TreePrinter;
 import org.openrewrite.TreeVisitor;
 import org.openrewrite.internal.ListUtils;
 
@@ -44,6 +43,7 @@ public class Markers implements Tree {
         }
     };
 
+    @With
     private final UUID id;
 
     @Getter
@@ -180,10 +180,5 @@ public class Markers implements Tree {
     @Override
     public <P> boolean isAcceptable(TreeVisitor<?, P> v, P p) {
         return false;
-    }
-
-    @Override
-    public <P> String print(TreePrinter<P> printer, P p) {
-        return "";
     }
 }

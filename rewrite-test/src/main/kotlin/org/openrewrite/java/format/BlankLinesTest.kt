@@ -20,10 +20,12 @@ import org.junit.jupiter.api.Test
 import org.openrewrite.Issue
 import org.openrewrite.Recipe
 import org.openrewrite.Tree.randomId
+import org.openrewrite.family.c.format.AutoFormat
+import org.openrewrite.family.c.format.BlankLines
 import org.openrewrite.java.JavaParser
 import org.openrewrite.java.JavaRecipeTest
-import org.openrewrite.java.style.BlankLinesStyle
-import org.openrewrite.java.style.IntelliJ
+import org.openrewrite.family.c.style.BlankLinesStyle
+import org.openrewrite.family.c.style.IntelliJ
 import org.openrewrite.style.NamedStyles
 
 interface BlankLinesTest : JavaRecipeTest {

@@ -23,11 +23,6 @@ import org.openrewrite.json.tree.*;
 
 public class JsonVisitor<P> extends TreeVisitor<Json, P> {
 
-    @Override
-    public String getLanguage() {
-        return "json";
-    }
-
     public Json visitArray(Json.Array array, P p) {
         Json.Array a = array;
         a = a.withPrefix(visitSpace(a.getPrefix(), p));

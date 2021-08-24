@@ -25,11 +25,6 @@ import org.openrewrite.yaml.tree.Yaml;
 
 public class YamlVisitor<P> extends TreeVisitor<Yaml, P> {
 
-    @Override
-    public String getLanguage() {
-        return "yaml";
-    }
-
     public <Y2 extends Yaml> Y2 maybeAutoFormat(Y2 before, Y2 after, P p) {
         return maybeAutoFormat(before, after, p, getCursor());
     }

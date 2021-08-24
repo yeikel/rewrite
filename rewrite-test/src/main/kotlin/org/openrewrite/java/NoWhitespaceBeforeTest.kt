@@ -24,7 +24,7 @@ import org.openrewrite.Recipe
 import org.openrewrite.Tree
 import org.openrewrite.java.cleanup.NoWhitespaceBefore
 import org.openrewrite.java.cleanup.NoWhitespaceBeforeStyle
-import org.openrewrite.java.format.AutoFormatVisitor
+import org.openrewrite.family.c.format.AutoFormatVisitor
 import org.openrewrite.java.style.Checkstyle
 import org.openrewrite.style.NamedStyles
 
@@ -97,7 +97,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -131,7 +132,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -160,7 +162,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -192,7 +195,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -228,7 +232,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -266,7 +271,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -293,7 +299,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -365,7 +372,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -394,7 +402,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -435,7 +444,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -466,7 +476,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -505,7 +516,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -539,7 +551,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )
@@ -575,7 +588,8 @@ interface NoWhitespaceBeforeTest : JavaRecipeTest {
             }
         """,
         afterConditions = { cu ->
-            val nucu = AutoFormatVisitor<ExecutionContext>().visit(cu, InMemoryExecutionContext {})
+            val nucu = AutoFormatVisitor<ExecutionContext>()
+                .visit(cu, InMemoryExecutionContext {})
             assertThat(nucu).isEqualTo(cu)
         }
     )

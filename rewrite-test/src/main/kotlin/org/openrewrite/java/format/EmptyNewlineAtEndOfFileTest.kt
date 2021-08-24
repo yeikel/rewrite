@@ -17,6 +17,7 @@ package org.openrewrite.java.format
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.openrewrite.family.c.format.EmptyNewlineAtEndOfFile
 import org.openrewrite.java.JavaParser
 
 interface EmptyNewlineAtEndOfFileTest {

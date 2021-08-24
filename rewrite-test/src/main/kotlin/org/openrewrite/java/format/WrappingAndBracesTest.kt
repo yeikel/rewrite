@@ -19,21 +19,29 @@ import org.junit.jupiter.api.Test
 import org.openrewrite.ExecutionContext
 import org.openrewrite.Issue
 import org.openrewrite.Recipe
+import org.openrewrite.family.c.format.TabsAndIndents
+import org.openrewrite.family.c.format.WrappingAndBraces
+import org.openrewrite.family.c.format.WrappingAndBracesVisitor
 import org.openrewrite.java.JavaParser
 import org.openrewrite.java.JavaRecipeTest
-import org.openrewrite.java.style.WrappingAndBracesStyle
+import org.openrewrite.family.c.style.WrappingAndBracesStyle
 
 @Suppress("UnusedAssignment", "ClassInitializerMayBeStatic")
 interface WrappingAndBracesTest : JavaRecipeTest {
     override val recipe: Recipe
-        get() = toRecipe {WrappingAndBracesVisitor<ExecutionContext>(WrappingAndBracesStyle())}
+        get() = toRecipe {
+            WrappingAndBracesVisitor<ExecutionContext>(
+                WrappingAndBracesStyle()
+            )
+        }
 
     @Suppress("StatementWithEmptyBody", "ConstantConditions")
     @Issue("https://github.com/openrewrite/rewrite/issues/804")
     @Test
     fun conditionalsShouldStartOnNewLines(jp: JavaParser) = assertChanged(
         jp,
-        recipe = WrappingAndBraces().doNext(TabsAndIndents()),
+        recipe = WrappingAndBraces()
+            .doNext(TabsAndIndents()),
         before = """
             class Test {
                 void test() {

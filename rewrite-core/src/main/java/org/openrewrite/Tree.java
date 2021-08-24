@@ -34,6 +34,8 @@ public interface Tree {
      */
     UUID getId();
 
+    <T extends Tree> T withId(UUID id);
+
     /**
      * Supports polymorphic visiting via {@link TreeVisitor#visit(Tree, Object)}. This is useful in cases where an AST
      * type contains a field that is of a type with a hierarchy. The visitor doesn't have to figure out which visit
@@ -61,26 +63,30 @@ public interface Tree {
      */
     <P> boolean isAcceptable(TreeVisitor<?, P> v, P p);
 
-    <P> String print(TreePrinter<P> printer, P p);
-
-    default <P> String print(P p) {
-        return print(TreePrinter.identity(), p);
+    default <P> TreeVisitor<?, PrintOutputCapture<P>> printer(Cursor cursor) {
+        return cursor.firstEnclosingOrThrow(SourceFile.class).printer(cursor);
     }
 
-    default String print() {
-        return print(TreePrinter.identity(), new Object());
+    default <P> TreeVisitor<?, P> formatter(@Nullable Tree stopAfter, Cursor cursor) {
+        return cursor.firstEnclosingOrThrow(SourceFile.class).formatter(stopAfter, cursor);
     }
 
-    default <P> String printTrimmed(TreePrinter<P> printer, P p) {
-        return StringUtils.trimIndent(print(printer, p).trim());
+    default <P> String print(P p, Cursor cursor) {
+        PrintOutputCapture<P> outputCapture = new PrintOutputCapture<>(p);
+        this.<P>printer(cursor).visit(this, outputCapture, cursor);
+        return outputCapture.out.toString();
     }
 
-    default <P> String printTrimmed(P p) {
-        return printTrimmed(TreePrinter.identity(), p);
+    default String print(Cursor cursor) {
+        return print(0, cursor);
     }
 
-    default String printTrimmed() {
-        return printTrimmed(TreePrinter.identity(), new Object());
+    default <P> String printTrimmed(P p, Cursor cursor) {
+        return StringUtils.trimIndent(print(p, cursor));
+    }
+
+    default String printTrimmed(Cursor cursor) {
+        return StringUtils.trimIndent(print(cursor));
     }
 
     default boolean isScope(@Nullable Tree tree) {
